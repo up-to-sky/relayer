@@ -11,6 +11,7 @@ import (
 	authtypes "github.com/cosmos/cosmos-sdk/x/auth/types"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/metamask"
 )
 
 var _ client.AccountRetriever = &CosmosProvider{}
@@ -22,9 +23,6 @@ func (cc *CosmosProvider) GetAccount(clientCtx client.Context, addr sdk.AccAddre
 	return account, err
 }
 
-// GetAccountWithHeight queries for an account given an address. Returns the
-// height of the query with the account. An error is returned if the query
-// or decoding fails.
 
 // EnsureExists returns an error if no account exists for the given address else nil.
 func (cc *CosmosProvider) EnsureExists(clientCtx client.Context, addr sdk.AccAddress) error {

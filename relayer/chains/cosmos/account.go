@@ -25,36 +25,6 @@ func (cc *CosmosProvider) GetAccount(clientCtx client.Context, addr sdk.AccAddre
 // GetAccountWithHeight queries for an account given an address. Returns the
 // height of the query with the account. An error is returned if the query
 // or decoding fails.
-func (cc *CosmosProvider) GetAccountWithHeight(_ client.Context, addr sdk.AccAddress) (client.Account, int64, error) {
-	var header metadata.MD
-	address, err := cc.EncodeBech32AccAddr(addr)
-	if err != nil {
-		return nil, 0, err
-	}
-
-	queryClient := authtypes.NewQueryClient(cc)
-	res, err := queryClient.Account(context.Background(), &authtypes.QueryAccountRequest{Address: address}, grpc.Header(&header))
-	if err != nil {
-		return nil, 0, err
-	}
-
-	blockHeight := header.Get(grpctypes.GRPCBlockHeightHeader)
-	if l := len(blockHeight); l != 1 {
-		return nil, 0, fmt.Errorf("unexpected '%s' header length; got %d, expected: %d", grpctypes.GRPCBlockHeightHeader, l, 1)
-	}
-
-	nBlockHeight, err := strconv.Atoi(blockHeight[0])
-	if err != nil {
-		return nil, 0, fmt.Errorf("failed to parse block height: %w", err)
-	}
-
-	var acc authtypes.AccountI
-	if err := cc.Cdc.InterfaceRegistry.UnpackAny(res.Account, &acc); err != nil {
-		return nil, 0, err
-	}
-
-	return acc, int64(nBlockHeight), nil
-}
 
 // EnsureExists returns an error if no account exists for the given address else nil.
 func (cc *CosmosProvider) EnsureExists(clientCtx client.Context, addr sdk.AccAddress) error {
